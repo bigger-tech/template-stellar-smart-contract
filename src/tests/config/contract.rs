@@ -5,9 +5,7 @@ use crate::{contract::ContractClient, Contract};
 use super::{constants::BASE_MINT_AMOUNT, utils::create_token_contract};
 
 pub struct ContractTest<'a> {
-    pub env: Env,
     pub contract: ContractClient<'a>,
-    pub admin: Address,
     pub user_a: Address,
     pub user_b: Address,
     pub token: (token::Client<'a>, token::StellarAssetClient<'a>, Address),
@@ -34,9 +32,7 @@ impl<'a> ContractTest<'a> {
         let contract = ContractClient::new(&env, &contract_id);
 
         ContractTest {
-            env,
             contract,
-            admin,
             user_a,
             user_b,
             token: (token_client, token_admin, token_issuer),

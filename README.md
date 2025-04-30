@@ -149,3 +149,31 @@ template-stellar-smart-contract/
 ├── Cargo.toml          # Rust project dependencies and settings
 └── README.md           # Project documentation
 ```
+
+## Contract Methods
+
+### Admin Functions
+
+#### set_admin
+
+```rust
+pub fn set_admin(env: Env, admin: Address) -> Result<(), Error>
+```
+
+Sets a new admin address for the contract. This function can only be called by the current admin.
+
+**Parameters:**
+
+- `env`: The environment object providing access to the contract's context
+- `admin`: The address of the new admin
+
+**Returns:**
+
+- `Result<(), Error>`: Returns Ok(()) on success or an Error if the caller is not authorized
+
+**Example:**
+
+```rust
+let client = ContractClient::new(&env, &contract_id);
+client.set_admin(&new_admin_address);
+```
