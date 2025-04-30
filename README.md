@@ -104,7 +104,7 @@ For more advanced tests, modify the test cases in the **src/tests/** directory.
 Make sure your environment is set up (e.g., testnet). Then, deploy your contract using the provided deployment script:
 
 ```bash
-stellar contract deploy --wasm target/wasm32-unknown-unknown/release/base_contract.wasm --network testnet --source S...
+stellar contract deploy --wasm target/wasm32-unknown-unknown/release/base_contract.wasm --network testnet --source S... -- --admin G...
 ```
 
 > When deploying a contract to the **mainnet** or any network with fees, ensure you deploy the `.optimized.wasm` version. Check [Optimize the contract](#3-optimize-the-contract)
@@ -120,7 +120,7 @@ CCJGTFIZMCS7CD3D5DHDJXAF6GWLGQKO7YUVGDYDFQ5KEGCTSCWZFJY3
 If you need to install the already builded **.wasm** file you can do it running the next command:
 
 ```bash
-stellar contract install --wasm target/wasm32-unknown-unknown/release/base_contract.wasm --network testnet --source S...
+stellar contract install --wasm target/wasm32-unknown-unknown/release/base_contract.wasm --network testnet --source S... -- --admin G...
 ```
 
 > When installing a contract on the **mainnet** or any network with fees, ensure you install the `.optimized.wasm` version. Check [Optimize the contract](#3-optimize-the-contract)
