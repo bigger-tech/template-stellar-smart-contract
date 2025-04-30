@@ -1,5 +1,5 @@
 
-use crate::tests::config::{constants::BASE_MINT_AMOUNT, contract::ContractTest};
+use crate::{storage::types::storage::DataKey, tests::config::{constants::BASE_MINT_AMOUNT, contract::ContractTest}};
 
 #[test]
 fn set_admin_test() {
@@ -16,10 +16,20 @@ fn set_admin_test() {
 #[should_panic = "Error(Contract, #1)"]
 fn set_admin_fail_test() {
     let ContractTest {
-        contract, user_a, ..
+        env,
+        contract,
+        admin,
+        ..
     } = ContractTest::setup();
 
-    contract.set_admin(&user_a);
+    let contract_id = contract.address.clone();
+    
+    let key = DataKey::Admin;
+    env.as_contract(&contract_id, || {
+        env.storage().instance().remove(&key);
+    });
+
+    contract.set_admin(&admin);
 }
 
 #[test]
