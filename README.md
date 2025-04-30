@@ -154,26 +154,49 @@ template-stellar-smart-contract/
 
 ### Admin Functions
 
-#### set_admin
+#### Set Admin
 
-```rust
-pub fn set_admin(env: Env, admin: Address) -> Result<(), Error>
+Assigns a new administrator address for the contract. Only the current admin can execute this operation, enforcing proper access control and authority transfer.
+
+```bash
+soroban contract invoke \
+  --id CONTRACT_ID \
+  --source CURRENT_ADMIN_SECRET_KEY \
+  --network testnet \
+  -- \
+  set_admin \
+  --admin NEW_ADMIN_ADDRESS
 ```
 
-Sets a new admin address for the contract. This function can only be called by the current admin.
+### User Operations
 
-**Parameters:**
+#### Transfer
 
-- `env`: The environment object providing access to the contract's context
-- `admin`: The address of the new admin
+Transfers tokens from one address to another. This method automatically updates the sender's transfer amount tracking before executing the token transfer.
 
-**Returns:**
+```bash
+soroban contract invoke \
+  --id CONTRACT_ID \
+  --source SENDER_SECRET_KEY \
+  --network testnet \
+  -- \
+  transfer \
+  --from SENDER_ADDRESS \
+  --to RECIPIENT_ADDRESS \
+  --token TOKEN_ADDRESS \
+  --amount TOKEN_AMOUNT
+```
 
-- `Result<(), Error>`: Returns Ok(()) on success or an Error if the caller is not authorized
+#### Get User
 
-**Example:**
+Retrieves user information for a given address, including their transaction history and account details.
 
-```rust
-let client = ContractClient::new(&env, &contract_id);
-client.set_admin(&new_admin_address);
+```bash
+soroban contract invoke \
+  --id CONTRACT_ID \
+  --source SECRET_KEY \
+  --network testnet \
+  -- \
+  get_user \
+  --address USER_ADDRESS
 ```
