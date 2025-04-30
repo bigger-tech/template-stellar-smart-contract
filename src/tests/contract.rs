@@ -1,48 +1,14 @@
-use soroban_sdk::testutils::Events;
 
 use crate::tests::config::{constants::BASE_MINT_AMOUNT, contract::ContractTest};
-
-#[test]
-fn initialize_test() {
-    let ContractTest {
-        env,
-        contract,
-        admin,
-        ..
-    } = ContractTest::setup();
-
-    let initial_events = env.events().all().clone();
-    assert_eq!(initial_events.len(), 3);
-
-    contract.initialize(&admin);
-
-    assert_eq!(env.events().all().len(), initial_events.len() + 1);
-}
-
-#[test]
-#[should_panic = "Error(Contract, #0)"]
-fn initialize_fail_test() {
-    let ContractTest {
-        contract,
-        admin,
-        user_a,
-        ..
-    } = ContractTest::setup();
-
-    contract.initialize(&admin);
-    contract.initialize(&user_a);
-}
 
 #[test]
 fn set_admin_test() {
     let ContractTest {
         contract,
-        admin,
         user_a,
         ..
     } = ContractTest::setup();
 
-    contract.initialize(&admin);
     contract.set_admin(&user_a);
 }
 
