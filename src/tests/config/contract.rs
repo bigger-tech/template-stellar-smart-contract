@@ -18,9 +18,6 @@ impl<'a> ContractTest<'a> {
         let env = Env::default();
         env.mock_all_auths();
 
-        let contract_id = env.register_contract(None, Contract {});
-        let contract = ContractClient::new(&env, &contract_id);
-
         let admin = Address::generate(&env);
         let token_issuer = Address::generate(&env);
 
@@ -31,6 +28,10 @@ impl<'a> ContractTest<'a> {
 
         token_admin.mint(&user_a, &BASE_MINT_AMOUNT);
         token_admin.mint(&user_b, &BASE_MINT_AMOUNT);
+
+        
+        let contract_id = env.register(Contract, (&admin,));
+        let contract = ContractClient::new(&env, &contract_id);
 
         ContractTest {
             env,
