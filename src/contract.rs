@@ -14,7 +14,7 @@ pub struct Contract;
 
 #[contractimpl]
 impl Contract {
-    pub fn initialize(env: Env, admin: Address) -> Result<(), Error> {
+    pub fn __constructor(env: Env, admin: Address) -> Result<(), Error> {
         initialize(&env, admin)
     }
 

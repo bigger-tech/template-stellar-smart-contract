@@ -104,7 +104,7 @@ For more advanced tests, modify the test cases in the **src/tests/** directory.
 Make sure your environment is set up (e.g., testnet). Then, deploy your contract using the provided deployment script:
 
 ```bash
-stellar contract deploy --wasm target/wasm32-unknown-unknown/release/base_contract.wasm --network testnet --source S...
+stellar contract deploy --wasm target/wasm32-unknown-unknown/release/base_contract.wasm --network testnet --source S... -- --admin G...
 ```
 
 > When deploying a contract to the **mainnet** or any network with fees, ensure you deploy the `.optimized.wasm` version. Check [Optimize the contract](#3-optimize-the-contract)
@@ -120,7 +120,7 @@ CCJGTFIZMCS7CD3D5DHDJXAF6GWLGQKO7YUVGDYDFQ5KEGCTSCWZFJY3
 If you need to install the already builded **.wasm** file you can do it running the next command:
 
 ```bash
-stellar contract install --wasm target/wasm32-unknown-unknown/release/base_contract.wasm --network testnet --source S...
+stellar contract install --wasm target/wasm32-unknown-unknown/release/base_contract.wasm --network testnet --source S... -- --admin G...
 ```
 
 > When installing a contract on the **mainnet** or any network with fees, ensure you install the `.optimized.wasm` version. Check [Optimize the contract](#3-optimize-the-contract)
@@ -148,4 +148,55 @@ template-stellar-smart-contract/
 │   │   └── ...         # Unit tests files for testing individual functions
 ├── Cargo.toml          # Rust project dependencies and settings
 └── README.md           # Project documentation
+```
+
+## Contract Methods
+
+### Admin Functions
+
+#### Set Admin
+
+Assigns a new administrator address for the contract. Only the current admin can execute this operation, enforcing proper access control and authority transfer.
+
+```bash
+soroban contract invoke \
+  --id CONTRACT_ID \
+  --source CURRENT_ADMIN_SECRET_KEY \
+  --network testnet \
+  -- \
+  set_admin \
+  --admin NEW_ADMIN_ADDRESS
+```
+
+### User Operations
+
+#### Transfer
+
+Transfers tokens from one address to another. This method automatically updates the sender's transfer amount tracking before executing the token transfer.
+
+```bash
+soroban contract invoke \
+  --id CONTRACT_ID \
+  --source SENDER_SECRET_KEY \
+  --network testnet \
+  -- \
+  transfer \
+  --from SENDER_ADDRESS \
+  --to RECIPIENT_ADDRESS \
+  --token TOKEN_ADDRESS \
+  --amount TOKEN_AMOUNT
+```
+
+#### Get User
+
+Retrieves user information for a given address, including their transaction history and account details.
+
+```bash
+soroban contract invoke \
+  --id CONTRACT_ID \
+  --source SECRET_KEY \
+  --network testnet \
+  -- \
+  get_user \
+  --address USER_ADDRESS
 ```
