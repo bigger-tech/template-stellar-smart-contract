@@ -1,19 +1,42 @@
 use crate::{
     storage::types::storage::DataKey,
-    tests::config::{constants::BASE_MINT_AMOUNT, contract::ContractTest},
+    tests::config::{
+        constants::BASE_MINT_AMOUNT, contract::ContractTest, utils::get_contract_events,
+    },
 };
 use soroban_sdk::{
     testutils::{MockAuth, MockAuthInvoke},
-    IntoVal,
+    vec, IntoVal, Symbol,
 };
 
 #[test]
 fn set_admin_test() {
     let ContractTest {
-        contract, user_a, ..
+        env,
+        admin,
+        contract,
+        user_a,
+        ..
     } = ContractTest::setup();
-
     contract.mock_all_auths().set_admin(&user_a);
+
+    let contract_events = get_contract_events(&env, contract.address.clone());
+
+    assert_eq!(
+        contract_events,
+        vec![
+            &env,
+            (
+                contract.address.clone(),
+                vec![
+                    &env,
+                    Symbol::new(&env, "admin_changed").into_val(&env),
+                    admin.into_val(&env),
+                ],
+                vec![&env, admin.clone(), user_a.clone()].into_val(&env),
+            )
+        ]
+    );
 }
 
 #[test]
