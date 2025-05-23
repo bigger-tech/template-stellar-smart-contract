@@ -22,10 +22,15 @@ impl Contract {
         set_admin(&env, admin)
     }
 
-    pub fn transfer(env: Env, from: Address, to: Address, token: Address, amount: i128) -> i128 {
-        update_transfer_amount(&env, &from);
-
-        transfer(&env, from, to, token, amount)
+    pub fn transfer(
+        env: Env,
+        from: Address,
+        to: Address,
+        token: Address,
+        amount: i128,
+    ) -> Result<i128, Error> {
+        update_transfer_amount(&env, &from)?;
+        Ok(transfer(&env, from, to, token, amount))
     }
 
     pub fn get_user(env: Env, address: Address) -> Result<User, Error> {
