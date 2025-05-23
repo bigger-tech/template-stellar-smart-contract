@@ -1,15 +1,40 @@
-
-use crate::{storage::types::storage::DataKey, tests::config::{constants::BASE_MINT_AMOUNT, contract::ContractTest}};
+use crate::{
+    storage::types::storage::DataKey,
+    tests::config::{
+        constants::BASE_MINT_AMOUNT, contract::ContractTest, utils::get_contract_events,
+    },
+};
+use soroban_sdk::{vec, IntoVal, Symbol};
 
 #[test]
 fn set_admin_test() {
     let ContractTest {
+        env,
+        admin,
         contract,
         user_a,
         ..
     } = ContractTest::setup();
 
     contract.set_admin(&user_a);
+
+    let contract_events = get_contract_events(&env, contract.address.clone());
+
+    assert_eq!(
+        contract_events,
+        vec![
+            &env,
+            (
+                contract.address.clone(),
+                vec![
+                    &env,
+                    Symbol::new(&env, "admin_changed").into_val(&env),
+                    admin.into_val(&env),
+                ],
+                vec![&env, admin.clone(), user_a.clone()].into_val(&env),
+            )
+        ]
+    );
 }
 
 #[test]
@@ -23,7 +48,7 @@ fn set_admin_fail_test() {
     } = ContractTest::setup();
 
     let contract_id = contract.address.clone();
-    
+
     let key = DataKey::Admin;
     env.as_contract(&contract_id, || {
         env.storage().instance().remove(&key);
