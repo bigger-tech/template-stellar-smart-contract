@@ -16,7 +16,6 @@ pub struct ContractTest<'a> {
 impl<'a> ContractTest<'a> {
     pub fn setup() -> Self {
         let env = Env::default();
-        env.mock_all_auths();
 
         let admin = Address::generate(&env);
         let token_issuer = Address::generate(&env);
@@ -26,10 +25,13 @@ impl<'a> ContractTest<'a> {
 
         let (token_client, token_admin) = create_token_contract(&env, &token_issuer);
 
-        token_admin.mint(&user_a, &BASE_MINT_AMOUNT);
-        token_admin.mint(&user_b, &BASE_MINT_AMOUNT);
+        token_admin
+            .mock_all_auths()
+            .mint(&user_a, &BASE_MINT_AMOUNT);
+        token_admin
+            .mock_all_auths()
+            .mint(&user_b, &BASE_MINT_AMOUNT);
 
-        
         let contract_id = env.register(Contract, (&admin,));
         let contract = ContractClient::new(&env, &contract_id);
 

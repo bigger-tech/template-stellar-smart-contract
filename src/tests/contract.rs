@@ -4,7 +4,10 @@ use crate::{
         constants::BASE_MINT_AMOUNT, contract::ContractTest, utils::get_contract_events,
     },
 };
-use soroban_sdk::{vec, IntoVal, Symbol};
+use soroban_sdk::{
+    testutils::{MockAuth, MockAuthInvoke},
+    vec, IntoVal, Symbol,
+};
 
 #[test]
 fn set_admin_test() {
@@ -15,6 +18,8 @@ fn set_admin_test() {
         user_a,
         ..
     } = ContractTest::setup();
+
+    contract.mock_all_auths().set_admin(&user_a);
 
     contract.set_admin(&user_a);
 
@@ -54,12 +59,36 @@ fn set_admin_fail_test() {
         env.storage().instance().remove(&key);
     });
 
-    contract.set_admin(&admin);
+    contract.mock_all_auths().set_admin(&admin);
+}
+
+#[test]
+#[should_panic(expected = "Error(Auth, InvalidAction)")]
+pub fn set_admin_with_unauthorized_admin_test() {
+    let ContractTest {
+        env,
+        contract,
+        user_a,
+        ..
+    } = ContractTest::setup();
+
+    contract
+        .mock_auths(&[MockAuth {
+            address: &user_a,
+            invoke: &MockAuthInvoke {
+                contract: &contract.address.clone(),
+                fn_name: "set_admin",
+                args: (user_a.clone(),).into_val(&env),
+                sub_invokes: &[],
+            },
+        }])
+        .set_admin(&user_a);
 }
 
 #[test]
 fn transfer_test() {
     let ContractTest {
+        env,
         contract,
         user_a,
         user_b,
@@ -67,7 +96,8 @@ fn transfer_test() {
         ..
     } = ContractTest::setup();
 
-    let (token_client, _, __) = token;
+    env.mock_all_auths();
+    let (token_client, _, _) = token;
 
     let transfer_amount = BASE_MINT_AMOUNT / 2;
 
@@ -87,8 +117,10 @@ fn transfer_test() {
 }
 
 #[test]
-fn get_user_test() {
+#[should_panic(expected = "Error(Auth, InvalidAction)")]
+pub fn transfer_with_unauthorized_sender_test() {
     let ContractTest {
+        env,
         contract,
         user_a,
         user_b,
@@ -96,7 +128,45 @@ fn get_user_test() {
         ..
     } = ContractTest::setup();
 
-    let (token_client, _, __) = token;
+    env.mock_all_auths();
+    let (token_client, _, _) = token;
+
+    let transfer_amount = BASE_MINT_AMOUNT / 2;
+
+    assert_eq!(token_client.balance(&user_a), BASE_MINT_AMOUNT);
+    assert_eq!(token_client.balance(&user_b), BASE_MINT_AMOUNT);
+
+    contract
+        .mock_auths(&[MockAuth {
+            address: &user_b,
+            invoke: &MockAuthInvoke {
+                contract: &contract.address.clone(),
+                fn_name: "set_admin",
+                args: (
+                    user_a.clone(),
+                    user_b.clone(),
+                    token_client.address.clone(),
+                    transfer_amount,
+                )
+                    .into_val(&env),
+                sub_invokes: &[],
+            },
+        }])
+        .transfer(&user_a, &user_b, &token_client.address, &transfer_amount);
+}
+
+#[test]
+fn get_user_test() {
+    let ContractTest {
+        env,
+        contract,
+        user_a,
+        user_b,
+        token,
+        ..
+    } = ContractTest::setup();
+    env.mock_all_auths();
+    let (token_client, _, _) = token;
 
     let transfer_amount = BASE_MINT_AMOUNT / 2;
 
@@ -117,5 +187,5 @@ fn get_user_fail_test() {
         contract, user_a, ..
     } = ContractTest::setup();
 
-    contract.get_user(&user_a);
+    contract.mock_all_auths().get_user(&user_a);
 }
