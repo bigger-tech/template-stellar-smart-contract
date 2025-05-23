@@ -18,10 +18,7 @@ fn set_admin_test() {
         user_a,
         ..
     } = ContractTest::setup();
-
     contract.mock_all_auths().set_admin(&user_a);
-
-    contract.set_admin(&user_a);
 
     let contract_events = get_contract_events(&env, contract.address.clone());
 
