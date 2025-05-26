@@ -12,7 +12,7 @@ defaults:
     shell: bash
 
 jobs:
-  build:
+  scout:
     runs-on: ubuntu-latest
 
     strategy:
@@ -21,7 +21,25 @@ jobs:
           - stable
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
+      - name: install scout
+        run: cargo install cargo-scout-audit
+
+      - name: Run scout
+        run: cargo scout-audit
+
+  build:
+    needs: scout
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        toolchain:
+          - stable
+
+    steps:
+      - uses: actions/checkout@v4
 
       - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }} && rustup target add wasm32-unknown-unknown
 
