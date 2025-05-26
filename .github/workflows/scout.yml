@@ -17,7 +17,7 @@ jobs:
 
       - name: do scout
         uses: coinfabrik/scout-actions@v3
-        scout_args: >
+        scout_args: |
             analyze
             --no-local
             --output-format md-gh
