@@ -14,16 +14,15 @@ defaults:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         toolchain:
           - stable
-
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }} && rustup target add wasm32-unknown-unknown
+      - name: Set up Rust toolchain
+        run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }} && rustup target add wasm32-unknown-unknown
 
       - name: Build contract
         run: cargo build
