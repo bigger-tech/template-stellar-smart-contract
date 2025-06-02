@@ -17,12 +17,6 @@ jobs:
 
       - name: do scout
         uses: coinfabrik/scout-actions@v3
-        with:
-          scout_args: |
-            -- 
-            --no-local
-            --output-format md-gh
-            --output-path /github/workspace/report.md
 
       - uses: mshick/add-pr-comment@v2.8.2
         with:
